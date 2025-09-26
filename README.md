@@ -20,18 +20,22 @@
 - **✨ Create Cash Flow Records** with date, status, type, category, subcategory, amount, and comments
 - **📋 View All Records** in a paginated table with sorting capabilities
 - **🔍 Advanced Filtering** by date range, status, type, category, and subcategory
-- **✏️ Edit & Delete** existing records with confirmation dialogs
+- **✏️ Edit & Delete** existing records with **clear action buttons** (icons + descriptive text)
 - **⚙️ Reference Management** for statuses, types, categories, and subcategories
 
-### 🔗 Business Logic
+### 🔗 Business Logic & Data Integrity
 - **Hierarchical Categories**: Subcategories linked to categories
 - **Type-Based Categories**: Categories tied to operation types (Income/Expense)
+- **Complete Subcategory Coverage**: **73 subcategories** across **20 categories** (all categories have subcategories)
 - **Validation Rules**: Prevents incompatible combinations
+- **Dynamic Dropdowns**: AJAX-powered category/subcategory filtering
 
-### ✅ Data Validation
+### ✅ Enhanced Data Validation
 - **Required Fields**: Amount, type, category, subcategory validation
 - **Client & Server Validation**: Both frontend and backend checks
 - **Business Rules**: Logical dependency validation
+- **Form Validation**: Real-time validation with error messages
+- **CSRF Protection**: Secure form submissions
 
 ## 🛠 Technology Stack
 
@@ -288,29 +292,48 @@ print('New password set!')
 ```
 cashflow_project/
 ├── cashflow/                    # Main application
-│   ├── management/             # Management commands
-│   │   └── commands/           # Custom Django commands
-│   │       ├── populate_initial_data.py    # Populate initial data
-│   │       └── add_missing_subcategories.py # Add missing subcategories
-│   ├── models.py              # Database models
-│   ├── views.py               # Views
-│   ├── forms.py               # Django forms
-│   ├── admin.py               # Admin panel
-│   ├── urls.py                # App URL routes
+│   ├── __init__.py            # Package initialization
+│   ├── admin.py               # Django admin configuration
+│   ├── apps.py                # Application configuration
+│   ├── forms.py               # Django forms with validation
+│   ├── models.py              # Database models (5 models)
+│   ├── tests.py               # Unit tests
+│   ├── urls.py                # URL routing
+│   ├── views.py               # View logic and API endpoints
+│   ├── management/            # Custom Django management commands
+│   │   ├── __init__.py        # Package initialization
+│   │   └── commands/          # Management command files
+│   │       ├── __init__.py    # Commands package init
+│   │       ├── populate_initial_data.py    # Populate reference data
+│   │       └── add_missing_subcategories.py # Add subcategories
+│   ├── migrations/            # Database migrations
+│   │   ├── 0001_initial.py    # Initial database schema
+│   │   └── __init__.py        # Migrations package init
 │   └── templates/             # HTML templates
 │       └── cashflow/
-│           ├── base.html      # Base template
-│           ├── index.html     # Main page
-│           ├── record_form.html # Record form
+│           ├── base.html      # Base template with Bootstrap
+│           ├── index.html     # Main dashboard with filtering
+│           ├── record_form.html # Create/edit record forms
 │           ├── record_confirm_delete.html # Delete confirmation
 │           └── reference_data.html # Reference data management
-├── cashflow_project/           # Project settings
-│   ├── settings.py            # Main settings
-│   └── urls.py                # Main URL routes
-├── manage.py                  # Django command launcher
-├── requirements.txt           # Python dependencies
+├── cashflow_project/          # Django project settings
+│   ├── __init__.py            # Project package initialization
+│   ├── asgi.py                # ASGI configuration
+│   ├── settings.py            # Main settings and configuration
+│   ├── urls.py                # Main URL routing
+│   └── wsgi.py                # WSGI configuration
+├── preview/                   # Screenshots and demo images
+│   ├── admin-panel.png        # Admin panel screenshot
+│   ├── create.png             # Create record form
+│   ├── create-home.png        # Record management interface
+│   ├── home.png               # Main dashboard screenshot
+│   └── reference.png          # Reference data interface
+├── .gitignore                 # Git ignore rules
+├── LICENSE                    # Custom bilingual license (RU/EN)
+├── README.md                  # Comprehensive documentation
 ├── db.sqlite3                 # SQLite database
-└── README.md                  # Documentation
+├── manage.py                  # Django management script
+└── requirements.txt           # Python dependencies
 ```
 
 ## 🎯 Usage
@@ -458,7 +481,45 @@ coverage report
 
 ## 📝 License
 
-This project is created for educational purposes.
+This project is created for educational purposes and includes a **custom bilingual license** (Russian/English) that:
+- ✅ Allows personal and educational use
+- ✅ Permits non-commercial projects
+- ❌ **Prohibits commercial use** without permission
+- ❌ **Prevents authorship appropriation**
+- 🛡️ **Provides legal protection** for the author
+
+See [LICENSE](LICENSE) file for complete terms.
+
+## 🔄 Recent Improvements & Updates
+
+### ✨ **Enhanced User Experience**
+- **Clear Action Buttons**: All edit/delete buttons now show both icons and descriptive text ("Изменить", "Удалить")
+- **Complete Subcategory Coverage**: Added **43 additional subcategories** ensuring all 20 categories have relevant subcategories
+- **Dynamic Form Validation**: Real-time validation with helpful error messages
+- **Responsive Design**: Improved mobile and tablet compatibility
+
+### 🛠 **Technical Enhancements**
+- **Comprehensive .gitignore**: Excludes Python cache, IDE files, OS files, and project-specific files
+- **Custom Management Commands**:
+  - `populate_initial_data` - Creates 55+ reference data entries
+  - `add_missing_subcategories` - Ensures complete subcategory coverage
+- **Bilingual License**: Russian and English versions with legal protection
+- **GitHub Ready**: Properly configured for version control and collaboration
+
+### 📊 **Database Statistics**
+- **5 Models** with proper relationships and constraints
+- **73 Subcategories** across 20 categories (100% coverage)
+- **3 Statuses**: Business, Personal, Tax
+- **2 Operation Types**: Income, Expense
+- **20 Categories**: 10 income + 10 expense categories
+- **Complete Migration System**: Ready for production deployment
+
+### 🔧 **Development Features**
+- **AJAX Integration**: Dynamic dropdown filtering without page reloads
+- **Form Validation**: Client and server-side validation with business rules
+- **CSRF Protection**: Secure form submissions
+- **Error Handling**: Comprehensive error messages and validation
+- **Admin Integration**: Full Django admin panel support
 
 ## 🆘 Support
 
@@ -467,7 +528,32 @@ If you encounter issues:
 2. Ensure all dependencies are installed
 3. Verify database configuration
 4. Refer to Django documentation
+5. Check the [LICENSE](LICENSE) for usage restrictions
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📞 Contact
+
+For questions about commercial use or licensing, please refer to the [LICENSE](LICENSE) file or contact the project maintainer.
 
 ---
 
 **Made with ❤️ for efficient financial management**
+
+<div align="center">
+
+### 📈 Project Status: **COMPLETE & PRODUCTION READY** ✅
+
+- ✅ Full-featured Django application
+- ✅ Comprehensive documentation
+- ✅ Professional license protection
+- ✅ GitHub repository setup
+- ✅ Ready for deployment
+
+</div>
