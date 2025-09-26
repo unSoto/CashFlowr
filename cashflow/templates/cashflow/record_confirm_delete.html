@@ -1,0 +1,88 @@
+{% extends 'cashflow/base.html' %}
+
+{% block title %}Удаление записи ДДС{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h2 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Подтверждение удаления
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-warning"></i>
+                    <strong>Внимание!</strong> Вы действительно хотите удалить эту запись? Это действие нельзя отменить.
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Информация о записи</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Дата:</strong><br>
+                                {{ record.date|date:"d.m.Y" }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Тип:</strong><br>
+                                <span class="badge {% if record.type.name == 'Пополнение' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ record.type.name }}
+                                </span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Категория:</strong><br>
+                                {{ record.category.name }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Подкатегория:</strong><br>
+                                {{ record.subcategory.name }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Статус:</strong><br>
+                                <span class="badge bg-secondary">{{ record.status.name }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Сумма:</strong><br>
+                                <span class="{% if record.type.name == 'Пополнение' %}amount-positive{% else %}amount-negative{% endif %}">
+                                    {% if record.type.name == 'Пополнение' %}+{% else %}-{% endif %}{{ record.amount|floatformat:2 }} р.
+                                </span>
+                            </div>
+                        </div>
+                        {% if record.comment %}
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong>Комментарий:</strong><br>
+                                    {{ record.comment }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'cashflow:index' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Удалить запись
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends 'cashflow/base.html' %}
+
+{% block title %}{% if record %}Редактирование{% else %}Создание{% endif %} записи ДДС{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">{{ title }}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.date.id_for_label }}" class="form-label">
+                                    {{ form.date.label }}{% if form.date.field.required %} *{% endif %}
+                                </label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.date.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    {{ form.status.label }}{% if form.status.field.required %} *{% endif %}
+                                </label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.status.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.type.id_for_label }}" class="form-label">
+                                    {{ form.type.label }}{% if form.type.field.required %} *{% endif %}
+                                </label>
+                                {{ form.type }}
+                                {% if form.type.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.type.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Выбор типа определяет доступные категории
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">
+                                    {{ form.category.label }}{% if form.category.field.required %} *{% endif %}
+                                </label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.category.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Категории зависят от выбранного типа
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.subcategory.id_for_label }}" class="form-label">
+                                    {{ form.subcategory.label }}{% if form.subcategory.field.required %} *{% endif %}
+                                </label>
+                                {{ form.subcategory }}
+                                {% if form.subcategory.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.subcategory.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Подкатегории зависят от выбранной категории
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.amount.id_for_label }}" class="form-label">
+                                    {{ form.amount.label }}{% if form.amount.field.required %} *{% endif %}
+                                </label>
+                                <div class="input-group">
+                                    {{ form.amount }}
+                                    <span class="input-group-text">руб.</span>
+                                </div>
+                                {% if form.amount.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.amount.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.comment.id_for_label }}" class="form-label">
+                            {{ form.comment.label }}
+                        </label>
+                        {{ form.comment }}
+                        {% if form.comment.errors %}
+                            <div class="text-danger">
+                                {% for error in form.comment.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Комментарий не обязателен, но поможет в будущем при анализе операций
+                        </small>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'cashflow:index' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад к списку
+                        </a>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> {% if record %}Сохранить{% else %}Создать{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if record %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Информация о записи</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Дата создания:</small>
+                            <p class="mb-1">{{ record.created_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Последнее изменение:</small>
+                            <p class="mb-1">{{ record.updated_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Валидация формы на клиенте
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const typeSelect = document.getElementById('id_type');
+        const categorySelect = document.getElementById('id_category');
+        const subcategorySelect = document.getElementById('id_subcategory');
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            let errorMessage = '';
+
+            // Проверка обязательных полей
+            if (!typeSelect.value) {
+                isValid = false;
+                errorMessage += 'Пожалуйста, выберите тип операции.\n';
+            }
+            if (!categorySelect.value) {
+                isValid = false;
+                errorMessage += 'Пожалуйста, выберите категорию.\n';
+            }
+            if (!subcategorySelect.value) {
+                isValid = false;
+                errorMessage += 'Пожалуйста, выберите подкатегорию.\n';
+            }
+
+            // Проверка суммы
+            const amountInput = document.getElementById('id_amount');
+            const amount = parseFloat(amountInput.value);
+            if (!amount || amount <= 0) {
+                isValid = false;
+                errorMessage += 'Пожалуйста, введите корректную сумму (больше 0).\n';
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                alert(errorMessage);
+            }
+        });
+    });
+</script>
+{% endblock %}

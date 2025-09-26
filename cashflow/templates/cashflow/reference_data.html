@@ -1,0 +1,417 @@
+{% extends 'cashflow/base.html' %}
+
+{% block title %}Управление справочниками{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Управление справочниками</h1>
+            <div>
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#helpPanel">
+                    <i class="fas fa-question-circle"></i> Помощь
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Панель помощи -->
+<div class="collapse mb-4" id="helpPanel">
+    <div class="card border-info">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle"></i> Как работать со справочниками
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Порядок создания:</h6>
+                    <ol class="mb-0">
+                        <li>Сначала создайте <strong>Типы</strong> (Пополнение, Списание)</li>
+                        <li>Затем создайте <strong>Категории</strong> для каждого типа</li>
+                        <li>После этого создайте <strong>Подкатегории</strong> для категорий</li>
+                        <li>В последнюю очередь создайте <strong>Статусы</strong></li>
+                    </ol>
+                </div>
+                <div class="col-md-6">
+                    <h6>Важные правила:</h6>
+                    <ul class="mb-0">
+                        <li>Категории привязаны к типам операций</li>
+                        <li>Подкатегории привязаны к категориям</li>
+                        <li>Нельзя удалить элемент, если он используется в записях</li>
+                        <li>Названия должны быть уникальными в рамках своего типа</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Статусы -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">
+            <i class="fas fa-tags text-primary"></i> Статусы
+        </h3>
+        <button class="btn btn-sm btn-primary" onclick="showModal('status', 'Создание статуса', null)">
+            <i class="fas fa-plus"></i> Добавить
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Дата создания</th>
+                        <th class="text-center">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status in statuses %}
+                        <tr>
+                            <td><strong>{{ status.name }}</strong></td>
+                            <td>{{ status.description|default:"-" }}</td>
+                            <td>{{ status.created_at|date:"d.m.Y H:i" }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary"
+                                        onclick="showModal('status', 'Редактирование статуса', {{ status.id }})">
+                                    <i class="fas fa-edit"></i> Изменить
+                                </button>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p class="mb-0">Статусы не найдены</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Типы -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">
+            <i class="fas fa-list text-success"></i> Типы операций
+        </h3>
+        <button class="btn btn-sm btn-success" onclick="showModal('type', 'Создание типа', null)">
+            <i class="fas fa-plus"></i> Добавить
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Категорий</th>
+                        <th>Дата создания</th>
+                        <th class="text-center">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for type in types %}
+                        <tr>
+                            <td><strong>{{ type.name }}</strong></td>
+                            <td>{{ type.description|default:"-" }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ type.categories.count }}</span>
+                            </td>
+                            <td>{{ type.created_at|date:"d.m.Y H:i" }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-success"
+                                        onclick="showModal('type', 'Редактирование типа', {{ type.id }})">
+                                    <i class="fas fa-edit"></i> Изменить
+                                </button>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p class="mb-0">Типы не найдены</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Категории -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">
+            <i class="fas fa-folder text-warning"></i> Категории
+        </h3>
+        <button class="btn btn-sm btn-warning" onclick="showModal('category', 'Создание категории', null)">
+            <i class="fas fa-plus"></i> Добавить
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Тип</th>
+                        <th>Описание</th>
+                        <th>Подкатегорий</th>
+                        <th>Дата создания</th>
+                        <th class="text-center">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                        <tr>
+                            <td><strong>{{ category.name }}</strong></td>
+                            <td>
+                                <span class="badge {% if category.type.name == 'Пополнение' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ category.type.name }}
+                                </span>
+                            </td>
+                            <td>{{ category.description|default:"-" }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ category.subcategories.count }}</span>
+                            </td>
+                            <td>{{ category.created_at|date:"d.m.Y H:i" }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-warning"
+                                        onclick="showModal('category', 'Редактирование категории', {{ category.id }})">
+                                    <i class="fas fa-edit"></i> Изменить
+                                </button>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p class="mb-0">Категории не найдены</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Подкатегории -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">
+            <i class="fas fa-folder-open text-info"></i> Подкатегории
+        </h3>
+        <button class="btn btn-sm btn-info" onclick="showModal('subcategory', 'Создание подкатегории', null)">
+            <i class="fas fa-plus"></i> Добавить
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Категория</th>
+                        <th>Описание</th>
+                        <th>Дата создания</th>
+                        <th class="text-center">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subcategory in subcategories %}
+                        <tr>
+                            <td><strong>{{ subcategory.name }}</strong></td>
+                            <td>{{ subcategory.category.name }}</td>
+                            <td>{{ subcategory.description|default:"-" }}</td>
+                            <td>{{ subcategory.created_at|date:"d.m.Y H:i" }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-info"
+                                        onclick="showModal('subcategory', 'Редактирование подкатегории', {{ subcategory.id }})">
+                                    <i class="fas fa-edit"></i> Изменить
+                                </button>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p class="mb-0">Подкатегории не найдены</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="hidden" id="editId" name="id">
+                    <input type="hidden" id="editType" name="type">
+
+                    <div class="mb-3" id="nameField">
+                        <label for="editName" class="form-label">Название *</label>
+                        <input type="text" class="form-control" id="editName" name="name" required>
+                    </div>
+
+                    <div class="mb-3" id="typeField" style="display: none;">
+                        <label for="editTypeSelect" class="form-label">Тип *</label>
+                        <select class="form-control" id="editTypeSelect" name="type">
+                            <option value="">Выберите тип...</option>
+                            {% for type in types %}
+                                <option value="{{ type.id }}">{{ type.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="categoryField" style="display: none;">
+                        <label for="editCategorySelect" class="form-label">Категория *</label>
+                        <select class="form-control" id="editCategorySelect" name="category">
+                            <option value="">Выберите категорию...</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Описание</label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function showModal(type, title, id) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('editType').value = type;
+        document.getElementById('editId').value = id || '';
+
+        // Скрываем все дополнительные поля
+        document.getElementById('typeField').style.display = 'none';
+        document.getElementById('categoryField').style.display = 'none';
+
+        if (type === 'category') {
+            document.getElementById('typeField').style.display = 'block';
+        } else if (type === 'subcategory') {
+            document.getElementById('categoryField').style.display = 'block';
+        }
+
+        // Если редактирование, загружаем данные
+        if (id) {
+            loadData(type, id);
+        } else {
+            // Очистка формы для создания
+            document.getElementById('editName').value = '';
+            document.getElementById('editDescription').value = '';
+            if (type === 'category') {
+                document.getElementById('editTypeSelect').value = '';
+            } else if (type === 'subcategory') {
+                document.getElementById('editCategorySelect').value = '';
+            }
+        }
+
+        new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    function loadData(type, id) {
+        fetch(`/admin/cashflow/${type}/${id}/change/`)
+            .then(response => response.text())
+            .then(html => {
+                // Парсим HTML и извлекаем данные формы
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const nameInput = doc.querySelector('#id_name');
+                const descInput = doc.querySelector('#id_description');
+
+                if (nameInput) document.getElementById('editName').value = nameInput.value;
+                if (descInput) document.getElementById('editDescription').value = descInput.value;
+
+                if (type === 'category') {
+                    const typeSelect = doc.querySelector('#id_type');
+                    if (typeSelect) document.getElementById('editTypeSelect').value = typeSelect.value;
+                } else if (type === 'subcategory') {
+                    const categorySelect = doc.querySelector('#id_category');
+                    if (categorySelect) document.getElementById('editCategorySelect').value = categorySelect.value;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+                alert('Ошибка при загрузке данных');
+            });
+    }
+
+    // Обработка отправки формы
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const type = formData.get('type');
+        const id = formData.get('id');
+
+        let url, method;
+        if (id) {
+            url = `/admin/cashflow/${type}/${id}/`;
+            method = 'POST'; // Django admin использует POST для обновления
+        } else {
+            url = `/admin/cashflow/${type}/add/`;
+            method = 'POST';
+        }
+
+        // Добавляем CSRF токен
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        formData.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch(url, {
+            method: method,
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload(); // Перезагружаем страницу
+            } else {
+                throw new Error('Ошибка сохранения');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving data:', error);
+            alert('Ошибка при сохранении данных');
+        });
+    });
+</script>
+{% endblock %}
