@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💰 CashFlow Manager
+# 💰 CashFlowr Manager
 
 [![Django](https://img.shields.io/badge/Django-5.2.6-092E20?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python)](https://www.python.org/)
